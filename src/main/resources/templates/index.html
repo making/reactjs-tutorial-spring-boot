@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Hello React</title>
+</head>
+<body>
+<div id="content" th:utext="${content}"></div>
+
+<script src="http://fb.me/react-0.12.2.js"
+        th:src="@{/webjars/react/0.12.2/react.min.js}"></script>
+<script src="http://code.jquery.com/jquery-1.10.0.min.js"
+        th:src="@{/webjars/jquery/1.11.2/jquery.min.js}"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/showdown/0.3.1/showdown.min.js"
+        th:src="@{/webjars/showdown/0.3.1/compressed/showdown.js}"></script>
+<script src="../static/tutorial.js"
+        th:src="tutorial.js"></script>
+<script type="text/javascript"
+        th:inline="javascript">
+    $(function () {
+        var comments = JSON.parse(/*[[${data}]]*/ '[]');
+        renderClient(comments);
+    });
+</script>
+</body>
+</html>
