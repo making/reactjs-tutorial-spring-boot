@@ -1,5 +1,10 @@
 package demo;
 
+
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -7,30 +12,32 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.function.Function;
 
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
+public class JavaScriptEngine {
 
-import jdk.nashorn.api.scripting.NashornScriptEngine;
+    private final ScriptEngine scriptEngine = new ScriptEngineManager()
+            .getEngineByName("js");
 
-public class NashornWrapper {
+    public JavaScriptEngine polyfillToNashorn() {
+        String polyfil = "var global = this;\n"
+                + "var console = {};\n"
+                + "console.debug = print;\n"
+                + "console.warn = print;\n"
+                + "console.log = print;";
+        return eval(polyfil);
+    }
 
-    private final NashornScriptEngine nashorn = (NashornScriptEngine) new ScriptEngineManager()
-            .getEngineByName("nashorn");
-
-    public NashornWrapper polyfill() {
+    public JavaScriptEngine eval(String script) {
         try {
-            this.nashorn.eval("var global = this;\n" + "var console = {};\n"
-                    + "console.debug = print;\n" + "console.warn = print;\n"
-                    + "console.log = print;");
+            this.scriptEngine.eval(script);
         } catch (ScriptException e) {
-            throw new IllegalStateException("Failed to polyfill!", e);
+            throw new IllegalStateException("Failed to eval " + script + "!", e);
         }
         return this;
     }
 
-    public NashornWrapper loadFromClassPath(String file) {
+    public JavaScriptEngine loadFromClassPath(String file) {
         try {
-            this.nashorn.eval(readFromClassPath(file));
+            this.scriptEngine.eval(readFromClassPath(file));
         } catch (ScriptException e) {
             throw new IllegalStateException("Failed to loadFromClassPath "
                     + file + "!", e);
@@ -40,7 +47,7 @@ public class NashornWrapper {
 
     public Object invokeFunction(String functionName, Object... args) {
         try {
-            return this.nashorn.invokeFunction(functionName, args);
+            return ((Invocable) this.scriptEngine).invokeFunction(functionName, args);
         } catch (ScriptException | NoSuchMethodException e) {
             throw new IllegalArgumentException("Failed to invoke "
                     + functionName, e);
@@ -48,7 +55,7 @@ public class NashornWrapper {
     }
 
     public <T> T invokeFunction(String functionName,
-            Function<Object, T> converter, Object... args) {
+                                Function<Object, T> converter, Object... args) {
         return converter.apply(invokeFunction(functionName, args));
     }
 

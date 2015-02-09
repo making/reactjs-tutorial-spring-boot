@@ -1,11 +1,7 @@
 package demo;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import javax.annotation.PostConstruct;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.annotation.PostConstruct;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @SpringBootApplication
 @Controller
@@ -28,21 +26,18 @@ public class App {
     }
 
     @Bean
-    NashornWrapper nashornWrapper() {
-        return new NashornWrapper()
-                .polyfill()
-                .loadFromClassPath(
-                        "META-INF/resources/webjars/react/0.12.2/react.min.js")
-                .loadFromClassPath(
-                        "META-INF/resources/webjars/showdown/0.3.1/compressed/showdown.js")
+    JavaScriptEngine nashornEngine() {
+        return new JavaScriptEngine()
+                .polyfillToNashorn()
+                .loadFromClassPath("META-INF/resources/webjars/react/0.12.2/react.min.js")
+                .loadFromClassPath("META-INF/resources/webjars/showdown/0.3.1/compressed/showdown.js")
                 .loadFromClassPath("static/tutorial.js");
     }
 
     @Autowired
     ObjectMapper objectMapper;
-
     @Autowired
-    NashornWrapper nashorn;
+    JavaScriptEngine nashorn;
 
     static final List<Comment> comments = new CopyOnWriteArrayList<>();
 
@@ -78,11 +73,9 @@ public class App {
 
 class Comment {
     public String author;
-
     public String text;
 
-    private Comment() {
-
+    Comment() {
     }
 
     public Comment(String author, String text) {
