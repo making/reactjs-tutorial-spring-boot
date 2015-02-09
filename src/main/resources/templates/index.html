@@ -4,7 +4,7 @@
     <title>Hello React</title>
 </head>
 <body>
-<div id="content" th:utext="${content}"></div>
+<div id="content" th:utext="${markup}"></div>
 
 <script src="http://fb.me/react-0.12.2.js"
         th:src="@{/webjars/react/0.12.2/react.min.js}"></script>
@@ -17,8 +17,8 @@
 <script type="text/javascript"
         th:inline="javascript">
     $(function () {
-        var comments = JSON.parse(/*[[${data}]]*/ '[]');
-        renderClient(comments);
+        var initialData = JSON.parse(/*[[${initialData}]]*/ '[]');
+        renderOnClient(initialData);
     });
 </script>
 </body>

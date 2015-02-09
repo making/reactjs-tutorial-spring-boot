@@ -41,8 +41,8 @@ public class App {
 
     @RequestMapping("/")
     String hello(Model model) throws JsonProcessingException {
-        model.addAttribute("content", react.invokeFunction("renderServer", comments));
-        model.addAttribute("data", objectMapper.writeValueAsString(comments));
+        model.addAttribute("markup", react.invokeFunction("renderOnServer", comments));
+        model.addAttribute("initialData", objectMapper.writeValueAsString(comments));
         return "index";
     }
 

@@ -16,3 +16,5 @@ Go http://localhost:8080
 ``` console
 $ jsx --watch src/main/resources/jsx src/main/resources/static/
 ```
+
+Of course, `npm install -g react-tools` is required.
