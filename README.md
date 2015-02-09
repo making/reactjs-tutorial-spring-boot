@@ -2,6 +2,7 @@ React.js Tutorial with Server Side Rendering by Spring Boot and Nashorn
 
 http://facebook.github.io/react/docs/tutorial.html
 
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
 
 ## Run Application
 
