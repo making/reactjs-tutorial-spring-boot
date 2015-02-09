@@ -42,14 +42,13 @@ public class App {
     ObjectMapper objectMapper;
 
     @Autowired
-    NashornWrapper nashornWrapper;
+    NashornWrapper nashorn;
 
     static final List<Comment> comments = new CopyOnWriteArrayList<>();
 
     @RequestMapping("/")
     String hello(Model model) throws JsonProcessingException {
-        String markup = nashornWrapper.invokeFunction("renderOnServer",String::valueOf,
-                comments);
+        String markup = nashorn.invokeFunction("renderOnServer", String::valueOf, comments);
         String initialData = objectMapper.writeValueAsString(comments);
         model.addAttribute("markup", markup);
         model.addAttribute("initialData", initialData);
@@ -82,7 +81,7 @@ class Comment {
 
     public String text;
 
-    public Comment() {
+    private Comment() {
 
     }
 
