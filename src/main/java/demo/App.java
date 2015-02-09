@@ -1,7 +1,11 @@
 package demo;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -13,10 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.PostConstruct;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @SpringBootApplication
 @Controller
@@ -26,23 +28,31 @@ public class App {
     }
 
     @Bean
-    React react() {
-        return new React()
-                .load("META-INF/resources/webjars/react/0.12.2/react.min.js")
-                .load("META-INF/resources/webjars/showdown/0.3.1/compressed/showdown.js")
-                .load("static/tutorial.js");
+    NashornWrapper nashornWrapper() {
+        return new NashornWrapper()
+                .polyfill()
+                .loadFromClassPath(
+                        "META-INF/resources/webjars/react/0.12.2/react.min.js")
+                .loadFromClassPath(
+                        "META-INF/resources/webjars/showdown/0.3.1/compressed/showdown.js")
+                .loadFromClassPath("static/tutorial.js");
     }
 
-    static final List<Comment> comments = new CopyOnWriteArrayList<>();
     @Autowired
     ObjectMapper objectMapper;
+
     @Autowired
-    React react;
+    NashornWrapper nashornWrapper;
+
+    static final List<Comment> comments = new CopyOnWriteArrayList<>();
 
     @RequestMapping("/")
     String hello(Model model) throws JsonProcessingException {
-        model.addAttribute("markup", react.invokeFunction("renderOnServer", comments));
-        model.addAttribute("initialData", objectMapper.writeValueAsString(comments));
+        String markup = nashornWrapper.invokeFunction("renderOnServer",String::valueOf,
+                comments);
+        String initialData = objectMapper.writeValueAsString(comments);
+        model.addAttribute("markup", markup);
+        model.addAttribute("initialData", initialData);
         return "index";
     }
 
@@ -69,6 +79,7 @@ public class App {
 
 class Comment {
     public String author;
+
     public String text;
 
     public Comment() {
