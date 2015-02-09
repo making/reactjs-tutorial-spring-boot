@@ -11,7 +11,7 @@ $ mvn spring-boot:run
 
 Go http://localhost:8080
 
-## Build JSX
+## Build JSX (Optional)
 
 ``` console
 $ jsx --watch src/main/resources/jsx src/main/resources/static/
